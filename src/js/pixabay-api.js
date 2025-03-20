@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 
-export default function getPics(queryWords) {
+export default async function getPics(queryWords) {
     axios.defaults.baseURL = "https://pixabay.com";
-    return axios.get("/api/", {
+    const pictures = await axios.get("/api/", {
         params: {
             key: "31908643-2178b12526c513c1beb381d6b",
             q: queryWords,
@@ -12,4 +12,5 @@ export default function getPics(queryWords) {
             safesearch: true,
         }
     })
+    return pictures.data;
 };

@@ -28,7 +28,7 @@ function onSubmit(event) {
         loaderEl.classList.remove("visually-hidden");
         getPics(queryWords)
             .then(response => {
-                const picsArray = response.data.hits;
+                const picsArray = response.hits;
                 if (picsArray.length === 0) {
                     return iziToast.error({
                         theme: "dark",

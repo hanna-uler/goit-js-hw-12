@@ -9,8 +9,8 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 const formEl = document.querySelector(".form");
 const loaderEl = document.querySelector(".loader")
 const galleryEl = document.querySelector(".gallery");
+let pageNum = 1;
 formEl.addEventListener("submit", onSubmit);
-
 function onSubmit(event) {
     event.preventDefault();
     const queryWords = event.currentTarget.searchText.value.trim("");
@@ -26,7 +26,7 @@ function onSubmit(event) {
     } else {
         clearGallery();
         loaderEl.classList.remove("visually-hidden");
-        getPics(queryWords)
+        getPics(queryWords, pageNum)
             .then(response => {
                 const picsArray = response.hits;
                 if (picsArray.length === 0) {
@@ -39,11 +39,14 @@ function onSubmit(event) {
                         timeout: 3000,
                     })
                 } else {
+                    pageNum += 1;
                     renderGallery(picsArray);
                     slGallery.refresh();
                 }
             })
             .catch(error => {
+                console.log(error);
+                
                 return iziToast.error({
                     theme: "dark",
                     title: "Error!",

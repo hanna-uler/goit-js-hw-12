@@ -9,10 +9,13 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 const formEl = document.querySelector(".form");
 const loaderEl = document.querySelector(".loader")
 const galleryEl = document.querySelector(".gallery");
-let pageNum = 1;
+const nextBtnEl = document.getElementById("load-more-btn");
+
 formEl.addEventListener("submit", onSubmit);
+
 function onSubmit(event) {
     event.preventDefault();
+    let pageNum = 1;
     const queryWords = event.currentTarget.searchText.value.trim("");
     if (queryWords === "") {
         return iziToast.error({

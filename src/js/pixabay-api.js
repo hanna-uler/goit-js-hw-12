@@ -19,3 +19,8 @@ export default async function getPics(queryWords, pageNum) {
     console.log(pictures.data.totalHits);
     return pictures.data;
 };
+
+async function getTotalPages(totalPics, pageLimit) {
+        return totalPages = Math.ceil(pictures.data.totalHits / pageLimit);
+
+}

@@ -12,6 +12,7 @@ const galleryEl = document.querySelector(".gallery");
 const nextBtnEl = document.getElementById("load-more-btn");
 
 formEl.addEventListener("submit", onSubmit);
+nextBtnEl.addEventListener("click", loadMore)
 
 function onSubmit(event) {
     event.preventDefault();
@@ -73,3 +74,7 @@ const slGalleryOptions = {
   captionsData: "alt",
 };
 let slGallery = new SimpleLightbox('.gallery a', slGalleryOptions);
+ 
+function loadMore(event) {
+    // call piabay func
+}

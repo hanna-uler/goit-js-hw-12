@@ -9,15 +9,20 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 const formEl = document.querySelector(".form");
 const loaderEl = document.querySelector(".loader")
 const galleryEl = document.querySelector(".gallery");
-const nextBtnEl = document.getElementById("load-more-btn");
+const loadMoreBtnEl = document.getElementById("load-more-btn");
 
 formEl.addEventListener("submit", onSubmit);
-nextBtnEl.addEventListener("click", loadMore)
+loadMoreBtnEl.addEventListener("click", onLoadMore)
+
+let pageNum = 1;
+let queryWords = "";
+const PAGE_LIMIT = 15;
 
 function onSubmit(event) {
     event.preventDefault();
-    let pageNum = 1;
-    const queryWords = event.currentTarget.searchText.value.trim("");
+    clearGallery();
+    loadMoreBtnEl.classList.add("visually-hidden");
+    queryWords = event.currentTarget.searchText.value.trim("");
     if (queryWords === "") {
         return iziToast.error({
             theme: 'dark',
@@ -28,8 +33,8 @@ function onSubmit(event) {
             timeout: 3000,
         })
     } else {
-        clearGallery();
         loaderEl.classList.remove("visually-hidden");
+        pageNum = 1;
         getPics(queryWords, pageNum)
             .then(response => {
                 const picsArray = response.hits;
@@ -43,14 +48,16 @@ function onSubmit(event) {
                         timeout: 3000,
                     })
                 } else {
-                    pageNum += 1;
                     renderGallery(picsArray);
                     slGallery.refresh();
+                    if (response.totalHits >= PAGE_LIMIT) {
+                        pageNum += 1;
+                        loadMoreBtnEl.classList.remove("visually-hidden");
+                    } 
                 }
             })
             .catch(error => {
                 console.log(error);
-                
                 return iziToast.error({
                     theme: "dark",
                     title: "Error!",
@@ -75,6 +82,53 @@ const slGalleryOptions = {
 };
 let slGallery = new SimpleLightbox('.gallery a', slGalleryOptions);
  
-function loadMore(event) {
-    // call piabay func
+function onLoadMore(event) {
+    getPics(queryWords, pageNum)
+        .then(response => {
+            loaderEl.classList.remove("visually-hidden");
+            const picsArray = response.hits;
+            const totalPics = response.totalHits;
+            const totalPages = getTotalPages(totalPics, PAGE_LIMIT);
+            renderGallery(picsArray);
+            slGallery.refresh();
+            console.log(pageNum);
+            // to check as it's the last page:
+            // if (pageNum >= 3) {
+            if (pageNum >= totalPages) {
+                    loadMoreBtnEl.classList.add("visually-hidden");
+                    return iziToast.info({
+                        theme: "light",
+                        message: "All the pictures have been loaded.",
+                        backgroundColor: "#6c8cff",
+                        closeOnClick: true,
+                        position: "bottomRight",
+                        timeout: 5000,
+                    })
+            } else {
+                loadMoreBtnEl.classList.remove("visually-hidden");
+                pageNum += 1;
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                return iziToast.error({
+                    theme: "dark",
+                    title: "Error!",
+                    message: "Sorry, something went wrong.",
+                    backgroundColor: "#EF4040",
+                    closeOnClick: true,
+                    position: "topRight",
+                    timeout: 3000,
+                    })
+            })
+            .finally(() => {
+            loaderEl.classList.add("visually-hidden");
+        });
+}
+
+function getTotalPages(totalPics, PAGE_LIMIT) {
+    console.log(Math.ceil(totalPics / PAGE_LIMIT));
+    const totalPages = Math.ceil(totalPics / PAGE_LIMIT);
+    return totalPages;
+
 }

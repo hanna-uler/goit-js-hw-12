@@ -14,13 +14,9 @@ export default async function getPics(queryWords, pageNum) {
             per_page: 15,
         }
     })
-    // totalPages = Math.ceil(pictures.data.totalHits / 15);
     console.log(pictures.data);
     console.log(pictures.data.totalHits);
     return pictures.data;
 };
 
-async function getTotalPages(totalPics, pageLimit) {
-        return totalPages = Math.ceil(pictures.data.totalHits / pageLimit);
 
-}

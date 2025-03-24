@@ -83,23 +83,25 @@ const slGalleryOptions = {
 let slGallery = new SimpleLightbox('.gallery a', slGalleryOptions);
  
 function onLoadMore(event) {
+    loadMoreBtnEl.classList.add("visually-hidden");
+    loaderEl.classList.remove("visually-hidden");
     getPics(queryWords, pageNum)
         .then(response => {
-            loaderEl.classList.remove("visually-hidden");
             const picsArray = response.hits;
             const totalPics = response.totalHits;
             const totalPages = getTotalPages(totalPics, PAGE_LIMIT);
             renderGallery(picsArray);
             slGallery.refresh();
-            console.log(pageNum);
             // to check as it's the last page:
-            // if (pageNum >= 3) {
-            if (pageNum >= totalPages) {
-                    loadMoreBtnEl.classList.add("visually-hidden");
+            if (pageNum >= 3) {
+            // if (pageNum >= totalPages) {
                     return iziToast.info({
-                        theme: "light",
-                        message: "All the pictures have been loaded.",
+                        theme: "dark",
+                        // message: "All the pictures have been loaded.",
+                        message: "We're sorry, but you've reached the end of the search results.",
                         backgroundColor: "#6c8cff",
+                        messageColor: "#fff",
+                        messageSize: 16,
                         closeOnClick: true,
                         position: "bottomRight",
                         timeout: 5000,

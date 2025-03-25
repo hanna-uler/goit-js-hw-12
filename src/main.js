@@ -32,6 +32,7 @@ async function onSubmit(event) {
             theme: 'dark',
             message: "Please, fill out the search field.",
             backgroundColor: '#EF4040',
+            messageSize: 16,
             closeOnClick: true,
             position: 'topRight',
             timeout: 3000,
@@ -65,6 +66,7 @@ async function onSubmit(event) {
                 title: "Error!",
                 message: "Sorry, something went wrong.",
                 backgroundColor: "#EF4040",
+                messageSize: 16,
                 closeOnClick: true,
                 position: "topRight",
                 timeout: 3000,
@@ -92,16 +94,12 @@ async function onLoadMore(event) {
         const totalPages = Math.ceil(totalHits / PAGE_LIMIT);
         renderGallery(picsArray);
         slGallery.refresh();
-        window.scrollBy({
-            top: 500,
-            behavior: "smooth",
-            });
-            // to check as it's the last page:
-            // if (pageNum >= 3) {
+        scroll();
+        // to check as it's the last page:
+        // if (pageNum >= 3) {
         if (pageNum >= totalPages) {
             return iziToast.info({
                 theme: "dark",
-                // message: "All the pictures have been loaded.",
                 message: "We're sorry, but you've reached the end of the search results.",
                 backgroundColor: "#6c8cff",
                 messageColor: "#fff",
@@ -120,6 +118,7 @@ async function onLoadMore(event) {
             title: "Error!",
             message: "Sorry, something went wrong.",
             backgroundColor: "#EF4040",
+            messageSize: 16,
             closeOnClick: true,
             position: "topRight",
             timeout: 3000,
@@ -129,7 +128,11 @@ async function onLoadMore(event) {
     }
 };
 
-// function getTotalPages(totalPics, PAGE_LIMIT) {
-//     const totalPages = Math.ceil(totalPics / PAGE_LIMIT);
-//     return totalPages;
-// }
+function scroll() {
+        const picCard = galleryEl.querySelector(".gallery-item");
+        const scrollLength = (picCard.getBoundingClientRect().height) * 2;
+        window.scrollBy({
+        top: scrollLength,
+        behavior: "smooth",
+        });
+}

@@ -14,8 +14,6 @@ export default async function getPics(queryWords, pageNum) {
             per_page: 15,
         }
     })
-    console.log(pictures.data);
-    console.log(pictures.data.totalHits);
     return pictures.data;
 };
 

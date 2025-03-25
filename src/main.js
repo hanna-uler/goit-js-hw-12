@@ -18,11 +18,15 @@ let pageNum = 1;
 let queryWords = "";
 const PAGE_LIMIT = 15;
 
-function onSubmit(event) {
+async function onSubmit(event) {
     event.preventDefault();
     clearGallery();
     loadMoreBtnEl.classList.add("visually-hidden");
-    queryWords = event.currentTarget.searchText.value.trim("");
+
+    const form = event.currentTarget;
+    const { searchText } = form.elements;
+    queryWords = searchText.value.trim("");
+
     if (queryWords === "") {
         return iziToast.error({
             theme: 'dark',
@@ -35,45 +39,41 @@ function onSubmit(event) {
     } else {
         loaderEl.classList.remove("visually-hidden");
         pageNum = 1;
-        getPics(queryWords, pageNum)
-            .then(response => {
-                const picsArray = response.hits;
-                if (picsArray.length === 0) {
-                    return iziToast.error({
-                        theme: "dark",
-                        message: "Sorry, there are no images matching your search query. Please try again!",
-                        backgroundColor: "#EF4040",
-                        closeOnClick: true,
-                        position: "topRight",
-                        timeout: 3000,
-                    })
-                } else {
-                    renderGallery(picsArray);
-                    slGallery.refresh();
-                    if (response.totalHits >= PAGE_LIMIT) {
-                        pageNum += 1;
-                        loadMoreBtnEl.classList.remove("visually-hidden");
-                    } 
-                }
-            })
-            .catch(error => {
-                console.log(error);
+        try {
+            const { hits, totalHits } = await getPics(queryWords, pageNum);
+            const picsArray = hits;
+            if (picsArray.length === 0) {
                 return iziToast.error({
                     theme: "dark",
-                    title: "Error!",
-                    message: "Sorry, something went wrong.",
+                    message: "Sorry, there are no images matching your search query. Please try again!",
                     backgroundColor: "#EF4040",
                     closeOnClick: true,
                     position: "topRight",
                     timeout: 3000,
-                    })
+                })
+            } else {
+                renderGallery(picsArray);
+                slGallery.refresh();
+                if (totalHits > PAGE_LIMIT) {
+                    loadMoreBtnEl.classList.remove("visually-hidden");
+                } 
+            }
+        } catch(error) {
+            console.log(error);
+            return iziToast.error({
+                theme: "dark",
+                title: "Error!",
+                message: "Sorry, something went wrong.",
+                backgroundColor: "#EF4040",
+                closeOnClick: true,
+                position: "topRight",
+                timeout: 3000,
             })
-            .finally(() => {
+        } finally {
             loaderEl.classList.add("visually-hidden");
-        });
-        event.currentTarget.searchText.value = "";
-    }
-    
+            form.reset();
+        };
+    }    
 };
 
 const slGalleryOptions = {
@@ -82,55 +82,54 @@ const slGalleryOptions = {
 };
 let slGallery = new SimpleLightbox('.gallery a', slGalleryOptions);
  
-function onLoadMore(event) {
+async function onLoadMore(event) {
+    pageNum += 1;
     loadMoreBtnEl.classList.add("visually-hidden");
     loaderEl.classList.remove("visually-hidden");
-    getPics(queryWords, pageNum)
-        .then(response => {
-            const picsArray = response.hits;
-            const totalPics = response.totalHits;
-            const totalPages = getTotalPages(totalPics, PAGE_LIMIT);
-            renderGallery(picsArray);
-            slGallery.refresh();
+    try {
+        const { hits, totalHits } = await getPics(queryWords, pageNum);
+        const picsArray = hits;
+        const totalPages = Math.ceil(totalHits / PAGE_LIMIT);
+        renderGallery(picsArray);
+        slGallery.refresh();
+        window.scrollBy({
+            top: 500,
+            behavior: "smooth",
+            });
             // to check as it's the last page:
-            if (pageNum >= 3) {
-            // if (pageNum >= totalPages) {
-                    return iziToast.info({
-                        theme: "dark",
-                        // message: "All the pictures have been loaded.",
-                        message: "We're sorry, but you've reached the end of the search results.",
-                        backgroundColor: "#6c8cff",
-                        messageColor: "#fff",
-                        messageSize: 16,
-                        closeOnClick: true,
-                        position: "bottomRight",
-                        timeout: 5000,
-                    })
-            } else {
-                loadMoreBtnEl.classList.remove("visually-hidden");
-                pageNum += 1;
-                }
+            // if (pageNum >= 3) {
+        if (pageNum >= totalPages) {
+            return iziToast.info({
+                theme: "dark",
+                // message: "All the pictures have been loaded.",
+                message: "We're sorry, but you've reached the end of the search results.",
+                backgroundColor: "#6c8cff",
+                messageColor: "#fff",
+                messageSize: 16,
+                closeOnClick: true,
+                position: "bottomRight",
+                timeout: 5000,
             })
-            .catch(error => {
-                console.log(error);
-                return iziToast.error({
-                    theme: "dark",
-                    title: "Error!",
-                    message: "Sorry, something went wrong.",
-                    backgroundColor: "#EF4040",
-                    closeOnClick: true,
-                    position: "topRight",
-                    timeout: 3000,
-                    })
-            })
-            .finally(() => {
+        } else {
+            loadMoreBtnEl.classList.remove("visually-hidden");
+        }
+    } catch(error) {
+        console.log(error);
+        return iziToast.error({
+            theme: "dark",
+            title: "Error!",
+            message: "Sorry, something went wrong.",
+            backgroundColor: "#EF4040",
+            closeOnClick: true,
+            position: "topRight",
+            timeout: 3000,
+        })
+    } finally {
             loaderEl.classList.add("visually-hidden");
-        });
-}
+    }
+};
 
-function getTotalPages(totalPics, PAGE_LIMIT) {
-    console.log(Math.ceil(totalPics / PAGE_LIMIT));
-    const totalPages = Math.ceil(totalPics / PAGE_LIMIT);
-    return totalPages;
-
-}
+// function getTotalPages(totalPics, PAGE_LIMIT) {
+//     const totalPages = Math.ceil(totalPics / PAGE_LIMIT);
+//     return totalPages;
+// }

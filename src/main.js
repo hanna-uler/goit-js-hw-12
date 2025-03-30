@@ -88,8 +88,8 @@ async function onLoadMore(event) {
         renderGallery(picsArray);
         scroll();
         // to check the last page:
-        if (pageNum >= 3) {
-        // if (pageNum >= totalPages) {
+        // if (pageNum >= 3) {
+        if (pageNum >= totalPages) {
             return iziToast.info({
                 theme: "dark",
                 message: "We're sorry, but you've reached the end of the search results.",

@@ -1,5 +1,12 @@
-const galleryEl = document.querySelector(".gallery");
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
+const galleryEl = document.querySelector(".gallery");
+const slGalleryOptions = {
+  captionDelay: 250,
+  captionsData: "alt",
+};
+let slGallery = new SimpleLightbox('.gallery a', slGalleryOptions);
 
 export default function renderGallery (picsArray) {
     const galleryMarkup = picsArray
@@ -24,6 +31,7 @@ export default function renderGallery (picsArray) {
         .join("");
     
     galleryEl.insertAdjacentHTML("beforeend", galleryMarkup); 
+    slGallery.refresh();
 };
 
 export function clearGallery() {

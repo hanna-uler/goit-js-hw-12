@@ -3,8 +3,7 @@ import "izitoast/dist/css/iziToast.min.css";
 import getPics from "./js/pixabay-api";
 import renderGallery from "./js/render-functions";
 import { clearGallery } from "./js/render-functions";
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
+
 
 const formEl = document.querySelector(".form");
 const loaderEl = document.querySelector(".loader")
@@ -54,7 +53,7 @@ async function onSubmit(event) {
                 })
             } else {
                 renderGallery(picsArray);
-                slGallery.refresh();
+                // slGallery.refresh();
                 if (totalHits > PAGE_LIMIT) {
                     loadMoreBtnEl.classList.remove("visually-hidden");
                 } 
@@ -77,12 +76,6 @@ async function onSubmit(event) {
         };
     }    
 };
-
-const slGalleryOptions = {
-  captionDelay: 250,
-  captionsData: "alt",
-};
-let slGallery = new SimpleLightbox('.gallery a', slGalleryOptions);
  
 async function onLoadMore(event) {
     pageNum += 1;
@@ -93,11 +86,10 @@ async function onLoadMore(event) {
         const picsArray = hits;
         const totalPages = Math.ceil(totalHits / PAGE_LIMIT);
         renderGallery(picsArray);
-        slGallery.refresh();
         scroll();
-        // to check as it's the last page:
-        // if (pageNum >= 3) {
-        if (pageNum >= totalPages) {
+        // to check the last page:
+        if (pageNum >= 3) {
+        // if (pageNum >= totalPages) {
             return iziToast.info({
                 theme: "dark",
                 message: "We're sorry, but you've reached the end of the search results.",

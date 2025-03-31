@@ -1,11 +1,10 @@
 import axios from 'axios';
-const API_KEY = import.meta.env.VITE_API_KEY;
 
 export default async function getPics(queryWords, pageNum) {
     axios.defaults.baseURL = "https://pixabay.com";
     const pictures = await axios.get("/api/", {
         params: {
-            key: API_KEY,
+            key: "31908643-2178b12526c513c1beb381d6b",
             q: queryWords,
             image_type: "photo",
             orientation: "horizontal",
